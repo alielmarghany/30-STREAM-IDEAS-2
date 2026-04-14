@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>30 Stream Ideas — Month 1 Playbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a25;
+    --accent: #7fff6e;
+    --accent2: #ff5c5c;
+    --accent3: #5ce8ff;
+    --accent4: #ffb347;
+    --text: #e8e8f0;
+    --muted: #5a5a70;
+    --border: rgba(255,255,255,0.07);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .hero {
+    position: relative;
+    padding: 80px 40px 60px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(127,255,110,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.1s;
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -3px;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.2s;
+  }
+
+  .hero-title span { color: var(--accent); }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.35s;
+  }
+
+  .legend {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.45s;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+  }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0 20px 48px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.55s;
+  }
+
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 18px;
+    border-radius: 100px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--accent);
+    color: #0a0a0f;
+    border-color: var(--accent);
+  }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    padding: 0 32px 80px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    cursor: default;
+    opacity: 0;
+    animation: cardIn 0.5s ease forwards;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  /* Accent stripe */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .card.gaming::before { background: var(--accent3); }
+  .card.irl::before { background: var(--accent2); }
+  .card.creative::before { background: var(--accent4); }
+  .card.social::before { background: #c084fc; }
+  .card.clip-farm::before { background: var(--accent); box-shadow: 0 0 20px var(--accent); }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    gap: 12px;
+  }
+
+  .card-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--surface2);
+    position: absolute;
+    bottom: 16px;
+    right: 20px;
+    letter-spacing: -2px;
+    user-select: none;
+  }
+
+  .card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .tag.gaming { background: rgba(92,232,255,0.12); color: var(--accent3); }
+  .tag.irl { background: rgba(255,92,92,0.12); color: var(--accent2); }
+  .tag.creative { background: rgba(255,179,71,0.12); color: var(--accent4); }
+  .tag.social { background: rgba(192,132,252,0.12); color: #c084fc; }
+  .tag.clip-farm { background: rgba(127,255,110,0.15); color: var(--accent); }
+  .tag.day { background: var(--surface2); color: var(--muted); }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    letter-spacing: -0.3px;
+    padding-right: 40px;
+  }
+
+  .card-desc {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+
+  .card-tip {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 12px;
+  }
+
+  .card-tip-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+  .card-tip-text {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .card-tip-text strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* Clip farm special */
+  .card.clip-farm {
+    background: linear-gradient(135deg, #0f1f0f 0%, var(--surface) 60%);
+    border-color: rgba(127,255,110,0.2);
+  }
+
+  .clip-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--accent);
+    color: #0a0a0f;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 48px;
+    border-top: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .footer span { color: var(--accent); }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:nth-child(1)  { animation-delay: 0.05s; }
+  .card:nth-child(2)  { animation-delay: 0.10s; }
+  .card:nth-child(3)  { animation-delay: 0.14s; }
+  .card:nth-child(4)  { animation-delay: 0.18s; }
+  .card:nth-child(5)  { animation-delay: 0.22s; }
+  .card:nth-child(6)  { animation-delay: 0.26s; }
+  .card:nth-child(7)  { animation-delay: 0.28s; }
+  .card:nth-child(8)  { animation-delay: 0.30s; }
+  .card:nth-child(9)  { animation-delay: 0.32s; }
+  .card:nth-child(10) { animation-delay: 0.34s; }
+  .card:nth-child(n+11) { animation-delay: 0.36s; }
+
+  .hidden { display: none !important; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">🎮 Twitch Growth Playbook — Month 1</div>
+  <h1 class="hero-title">30 STREAM<br><span>IDEAS.</span></h1>
+  <p class="hero-sub">Built for a 16-year-old gaming/IRL streamer starting from zero. Creative, viral-ready, and built to grow.</p>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent3)"></div> GAMING</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div> IRL</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent4)"></div> CREATIVE</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c084fc"></div> SOCIAL</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent); box-shadow:0 0 8px var(--accent)"></div> CLIP FARM</div>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filter('all')">All 30</button>
+  <button class="filter-btn" onclick="filter('clip-farm')">🔥 Clip Farm</button>
+  <button class="filter-btn" onclick="filter('gaming')">Gaming</button>
+  <button class="filter-btn" onclick="filter('irl')">IRL</button>
+  <button class="filter-btn" onclick="filter('creative')">Creative</button>
+  <button class="filter-btn" onclick="filter('social')">Social</button>
+</div>
+
+<div class="grid" id="grid">
+
+  <!-- STREAM 1 - CLIP FARM -->
+  <div class="card clip-farm" data-cats="clip-farm gaming">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag clip-farm">⚡ Clip Farm</span>
+        <span class="tag day">Day 1</span>
+        <span class="tag gaming">Gaming</span>
+      </div>
+    </div>
+    <div class="clip-badge">VIRAL FIRST</div>
+    <div class="card-title">THE UNHINGED FIRST STREAM</div>
+    <div class="card-desc">Raw, chaotic, no overlays, no intro — just you starting mid-sentence like you've been live for hours. Play a rage-bait game (Getting Over It, Jump King, or A Difficult Game About Climbing) and absolutely lose your mind at it. No fake energy, pure reaction.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">🎬</div>
+      <div class="card-tip-text"><strong>Clip strategy:</strong> Set up your best rage moments back to back. Clip every time you hit the funny wall. Post as "My first stream was a disaster 💀" on TikTok/Shorts. Low bar = high relatability.</div>
+    </div>
+    <div class="card-num">01</div>
+  </div>
+
+  <!-- STREAM 2 - CLIP FARM -->
+  <div class="card clip-farm" data-cats="clip-farm irl social">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag clip-farm">⚡ Clip Farm</span>
+        <span class="tag day">Day 2</span>
+        <span class="tag irl">IRL</span>
+      </div>
+    </div>
+    <div class="clip-badge">VIRAL SECOND</div>
+    <div class="card-title">ASKING MY FAMILY TO ROAST ME LIVE</div>
+    <div class="card-desc">Bring your family members on camera one by one and let them roast your decision to be a streamer. Siblings, parents, even grandparents if possible. React to everything in real time. The more they don't get it, the funnier it is.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">🎬</div>
+      <div class="card-tip-text"><strong>Clip strategy:</strong> Every single family roast line is a clip. "My mom called streaming a waste of time while I was live" is TikTok gold. Post as a series: "Told my family I'm a streamer… part 1"</div>
+    </div>
+    <div class="card-num">02</div>
+  </div>
+
+  <!-- STREAM 3 -->
+  <div class="card gaming" data-cats="gaming">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag gaming">Gaming</span>
+        <span class="tag day">Day 3</span>
+      </div>
+    </div>
+    <div class="card-title">PLAYING A GAME I'VE NEVER HEARD OF</div>
+    <div class="card-desc">Go on itch.io and play 3 completely unknown indie games blind. No prep, no research. Pure first-time reactions. You become the audience's filter — discovering what's actually good vs. cursed.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Inspo:</strong> Marlon vibes — letting genuine curiosity drive the stream. Zero big-streamer game choices means zero competition in clips.</div>
+    </div>
+    <div class="card-num">03</div>
+  </div>
+
+  <!-- STREAM 4 -->
+  <div class="card irl" data-cats="irl">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag irl">IRL</span>
+        <span class="tag day">Day 4</span>
+      </div>
+    </div>
+    <div class="card-title">COOKING SOMETHING I'VE NEVER COOKED IN MY LIFE</div>
+    <div class="card-desc">Pick a recipe that looks way too complicated for your skill level — sushi, croissants, ramen from scratch. No tutorial allowed mid-stream. Chat helps, you struggle, chaos ensues. End result always funny whether it works or not.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Inspo:</strong> Speed's chaotic energy but kitchen edition. Failure = content. Document the disaster plating.</div>
+    </div>
+    <div class="card-num">04</div>
+  </div>
+
+  <!-- STREAM 5 -->
+  <div class="card gaming" data-cats="gaming">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag gaming">Gaming</span>
+        <span class="tag day">Day 5</span>
+      </div>
+    </div>
+    <div class="card-title">CHAT CONTROLS MY DECISIONS</div>
+    <div class="card-desc">Play any open-world game (GTA, Minecraft, RDR2) and let chat vote on literally everything — where to go, what to build, who to talk to, what crime to commit. Majority rules, no matter how stupid it gets.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Setup tip:</strong> Use Strawpoll or Twitch polls for quick votes. Build a rule: if chat is tied, you spin a wheel. Engagement skyrockets because they feel ownership.</div>
+    </div>
+    <div class="card-num">05</div>
+  </div>
+
+  <!-- STREAM 6 -->
+  <div class="card social" data-cats="social">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag social">Social</span>
+        <span class="tag day">Day 6</span>
+      </div>
+    </div>
+    <div class="card-title">REACTING TO "HOW TO GROW ON TWITCH" ADVICE</div>
+    <div class="card-desc">Find the most generic streamer advice videos and react to them live — agree, disagree, roast, test theories in real time. You're building a meta-narrative: the honest journey of a new streamer vs. fake guru advice.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Why it works:</strong> Every streamer has seen this content. You're speaking directly to your target audience while being self-aware. Builds trust instantly.</div>
+    </div>
+    <div class="card-num">06</div>
+  </div>
+
+  <!-- STREAM 7 -->
+  <div class="card gaming" data-cats="gaming">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag gaming">Gaming</span>
+        <span class="tag day">Day 7</span>
+      </div>
+    </div>
+    <div class="card-title">SPEED RUN A GAME BADLY ON PURPOSE</div>
+    <div class="card-desc">Pick a game with a known speedrun world record and try to beat it — but play as chaotically as possible. Comment on real WR routes, try shortcuts, fail miserably. You don't have to be fast, you just have to commit.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Best picks:</strong> Celeste any%, Mario 64, or even Getting Over It. The contrast between serious speedrun commentary and your actual gameplay is the bit.</div>
+    </div>
+    <div class="card-num">07</div>
+  </div>
+
+  <!-- STREAM 8 -->
+  <div class="card irl" data-cats="irl">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag irl">IRL</span>
+        <span class="tag day">Day 8</span>
+      </div>
+    </div>
+    <div class="card-title">DOING MY HOMEWORK LIVE WITH CHAT AS MY TUTOR</div>
+    <div class="card-desc">Actual school homework, live on stream. Chat tries to help (or give wrong answers). You grade their suggestions. Set a timer — if you finish before time runs out, you play games for the rest. If not, punishment game.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Why it works:</strong> Relatable to literally every viewer your age. The "chat as bad tutor" dynamic creates endless funny moments and clip potential.</div>
+    </div>
+    <div class="card-num">08</div>
+  </div>
+
+  <!-- STREAM 9 -->
+  <div class="card creative" data-cats="creative">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag creative">Creative</span>
+        <span class="tag day">Day 9</span>
+      </div>
+    </div>
+    <div class="card-title">BUILDING MY STREAM SETUP LIVE — COMMENTARY EDITION</div>
+    <div class="card-desc">Set up, rearrange, or improve your actual stream setup during the stream itself. Talk through every budget decision out loud. "$8 mic vs $200 mic — let's actually test it." Raw, behind-the-scenes streamer content is deeply engaging to aspiring streamers.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Bonus:</strong> This content repurposes perfectly into YouTube "budget stream setup" format which has massive search traffic.</div>
+    </div>
+    <div class="card-num">09</div>
+  </div>
+
+  <!-- STREAM 10 -->
+  <div class="card gaming" data-cats="gaming">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag gaming">Gaming</span>
+        <span class="tag day">Day 10</span>
+      </div>
+    </div>
+    <div class="card-title">PLAYING A GAME FROM 10 YEARS AGO BLIND</div>
+    <div class="card-desc">Pick a classic that was massive before you had proper gaming memory — Far Cry 3, Skyrim, MW2, Dead Space. Experience it completely fresh with zero nostalgia, max genuine reactions. Older viewers watch you discover what they grew up on.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Inspo:</strong> Lacy's authentic reaction energy. Don't fake nostalgia you don't have — your real fresh perspective IS the content.</div>
+    </div>
+    <div class="card-num">10</div>
+  </div>
+
+  <!-- STREAM 11 -->
+  <div class="card irl" data-cats="irl">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag irl">IRL</span>
+        <span class="tag day">Day 11</span>
+      </div>
+    </div>
+    <div class="card-title">TRYING THE WEIRDEST FOOD COMBOS CHAT SUGGESTS</div>
+    <div class="card-desc">Chat submits food combinations in the first 15 mins. You rank the danger level, then actually make and eat them. Reaction cam front and center. The worse it looks, the better the stream. Set a personal limit and commit to it.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Clip tip:</strong> Every taste reaction is a potential viral short. Keep a specific "this is actually good" counter — chat will try to get it to zero.</div>
+    </div>
+    <div class="card-num">11</div>
+  </div>
+
+  <!-- STREAM 12 -->
+  <div class="card social" data-cats="social">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag social">Social</span>
+        <span class="tag day">Day 12</span>
+      </div>
+    </div>
+    <div class="card-title">CALLING OUT THE MOST OVERRATED GAMES LIVE</div>
+    <div class="card-desc">Rank the "most overrated games of all time" from your actual perspective. Be genuinely honest — not edgy for the sake of it. Defend your takes live, let chat argue. This is debate content disguised as gaming content.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Warning/Opportunity:</strong> Pick takes you actually believe. Fake controversy dies instantly. Genuine conviction drives hours of chat argument.</div>
+    </div>
+    <div class="card-num">12</div>
+  </div>
+
+  <!-- STREAM 13 -->
+  <div class="card gaming" data-cats="gaming">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag gaming">Gaming</span>
+        <span class="tag day">Day 13</span>
+      </div>
+    </div>
+    <div class="card-title">WORST SETTINGS CHALLENGE — MAX DIFFICULTY + INVERTED CONTROLS</div>
+    <div class="card-desc">Play any competitive or adventure game with the hardest possible settings AND inverted controls turned on. Add a rule: you cannot complain, only explain calmly what is going wrong, like a news anchor covering a disaster.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>The bit:</strong> The calm commentary vs the absolute chaos on screen is the comedic contrast. Deadpan delivery makes it 10x funnier.</div>
+    </div>
+    <div class="card-num">13</div>
+  </div>
+
+  <!-- STREAM 14 -->
+  <div class="card creative" data-cats="creative">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag creative">Creative</span>
+        <span class="tag day">Day 14</span>
+      </div>
+    </div>
+    <div class="card-title">DESIGNING MY STREAM OVERLAY LIVE</div>
+    <div class="card-desc">Open Figma or Canva on screen and design your stream overlay in real time. Ask chat what looks better, vote on colors, let them name the design. They feel like co-creators. The final overlay becomes "built by my community."</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Why it works:</strong> Community ownership = loyalty. They'll remember "I helped design that" and come back to see it used.</div>
+    </div>
+    <div class="card-num">14</div>
+  </div>
+
+  <!-- STREAM 15 -->
+  <div class="card irl" data-cats="irl">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag irl">IRL</span>
+        <span class="tag day">Day 15</span>
+      </div>
+    </div>
+    <div class="card-title">HALF-MONTH RECAP: "WHAT ACTUALLY HAPPENED"</div>
+    <div class="card-desc">Day 15 — a sit-down honest recap stream. What worked, what flopped, what you learned. Show raw viewer stats (even if small). This kind of radical transparency builds parasocial connection that most big streamers lost years ago.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Tone:</strong> Not cringe "thank you for 3 followers." More like: "Here's what actually happened, here's what I'm changing." Treat your small audience like they matter — they will.</div>
+    </div>
+    <div class="card-num">15</div>
+  </div>
+
+  <!-- STREAM 16 -->
+  <div class="card gaming" data-cats="gaming">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag gaming">Gaming</span>
+        <span class="tag day">Day 16</span>
+      </div>
+    </div>
+    <div class="card-title">1v1 A RANDOM VIEWER — IN 5 DIFFERENT GAMES</div>
+    <div class="card-desc">Pick a viewer from chat, 1v1 them in 5 different games. Lose at least 2 on purpose to see their reaction. Award a title to the winner ("the only person who beat me"). Track across streams — they become a recurring character.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Community building:</strong> Named recurring viewers become story arcs. Small streams live and die by their regular characters.</div>
+    </div>
+    <div class="card-num">16</div>
+  </div>
+
+  <!-- STREAM 17 -->
+  <div class="card creative" data-cats="creative">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag creative">Creative</span>
+        <span class="tag day">Day 17</span>
+      </div>
+    </div>
+    <div class="card-title">LEARNING A SKILL IN 3 HOURS LIVE</div>
+    <div class="card-desc">Pick something with a measurable outcome: solve a Rubik's cube, learn a card trick, do 10 pushups in a row, memorize a rap verse. Timer on screen. Failure is fine — the process is the content. Document the real learning curve.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Best picks for your age:</strong> Beatboxing basics, juggling 3 balls, drawing a realistic face. Low tech, high personality show.</div>
+    </div>
+    <div class="card-num">17</div>
+  </div>
+
+  <!-- STREAM 18 -->
+  <div class="card gaming" data-cats="gaming">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag gaming">Gaming</span>
+        <span class="tag day">Day 18</span>
+      </div>
+    </div>
+    <div class="card-title">PLAYING A KIDS GAME COMPLETELY SERIOUSLY</div>
+    <div class="card-desc">Fire up Roblox, Club Penguin, or a kids' mobile game and treat it like a professional esports match. Full analyst commentary, tactical callouts, post-game review. The commitment to the bit is everything.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Inspo:</strong> Speed playing kids games with adult energy. The irony layer makes it work for all ages. Nostalgia hook for older viewers too.</div>
+    </div>
+    <div class="card-num">18</div>
+  </div>
+
+  <!-- STREAM 19 -->
+  <div class="card irl" data-cats="irl">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag irl">IRL</span>
+        <span class="tag day">Day 19</span>
+      </div>
+    </div>
+    <div class="card-title">EXTREME ROOM MAKEOVER IN ONE STREAM</div>
+    <div class="card-desc">Rearrange and improve your room completely during the stream. Full before/after. Chat votes on where things go. You have to follow every vote even if it's stupid. End stream in the new setup and go live from it immediately.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Content gold:</strong> Time-lapse the whole thing for a YouTube/TikTok video. "Chat redesigned my room" is a strong title that drives external clicks back to you.</div>
+    </div>
+    <div class="card-num">19</div>
+  </div>
+
+  <!-- STREAM 20 -->
+  <div class="card social" data-cats="social">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag social">Social</span>
+        <span class="tag day">Day 20</span>
+      </div>
+    </div>
+    <div class="card-title">ROASTING MY OWN PAST STREAMS LIVE</div>
+    <div class="card-desc">Watch your own early VODs live with your chat and roast yourself relentlessly. Point out every awkward pause, bad take, weird voice. Self-awareness at this level is rare and deeply likable. Invites chat to pile on in a good way.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Tone:</strong> Confidence through self-deprecation. The person who can laugh at themselves is the person everyone wants to watch.</div>
+    </div>
+    <div class="card-num">20</div>
+  </div>
+
+  <!-- STREAM 21 -->
+  <div class="card gaming" data-cats="gaming">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag gaming">Gaming</span>
+        <span class="tag day">Day 21</span>
+      </div>
+    </div>
+    <div class="card-title">FINISHING A GAME WITHOUT DYING — OR GOING AGAIN FROM SCRATCH</div>
+    <div class="card-desc">Set a rule: complete a full game, boss-to-boss, without dying. Every death restarts the run. No cuts, no breaks. Pick a hard but manageable game — Hollow Knight, Celeste, Hades. The stakes make every moment tense.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Format tip:</strong> This can run multiple days if you keep dying. "Day 3 of trying to finish without dying" becomes a series with built-in return viewers.</div>
+    </div>
+    <div class="card-num">21</div>
+  </div>
+
+  <!-- STREAM 22 -->
+  <div class="card irl" data-cats="irl">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag irl">IRL</span>
+        <span class="tag day">Day 22</span>
+      </div>
+    </div>
+    <div class="card-title">UNBOXING THE CHEAPEST GAMING GEAR ON AMAZON</div>
+    <div class="card-desc">Buy the absolute cheapest gaming peripherals (under $5 mouse, $3 keyboard) and actually use them to play. Live performance test vs your normal setup. Honest reactions to what breaks, what surprisingly works. Pure consumer content energy.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Reuse angle:</strong> "I played competitive games with $8 total gear" is YouTube-ready. Budget gaming content has consistent search demand.</div>
+    </div>
+    <div class="card-num">22</div>
+  </div>
+
+  <!-- STREAM 23 -->
+  <div class="card gaming" data-cats="gaming">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag gaming">Gaming</span>
+        <span class="tag day">Day 23</span>
+      </div>
+    </div>
+    <div class="card-title">RANDOM GENRE ROULETTE — 6 GAMES, 20 MINS EACH</div>
+    <div class="card-desc">Spin a wheel for genre: horror, farming sim, fighting game, platformer, visual novel, strategy. 20 minutes each, no skip allowed. You never know what's next, chat never knows, the chaos is the format.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Pacing tip:</strong> The transition moments between genres are where funny bits happen. React to the genre you just spun before switching — build anticipation.</div>
+    </div>
+    <div class="card-num">23</div>
+  </div>
+
+  <!-- STREAM 24 -->
+  <div class="card creative" data-cats="creative">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag creative">Creative</span>
+        <span class="tag day">Day 24</span>
+      </div>
+    </div>
+    <div class="card-title">WRITING A STORY LIVE WHERE CHAT DECIDES EVERYTHING</div>
+    <div class="card-desc">Start a story with: "There was a streamer named [your name] who…" and let chat vote on every next plot development. You write it live in a Google Doc on screen, read it dramatically, and commit fully to whatever chaos unfolds.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Gold format:</strong> The story gets increasingly unhinged. Save the final doc, read it back at the end of the stream. Post it to Twitter/X as a thread — it becomes an artifact of your community.</div>
+    </div>
+    <div class="card-num">24</div>
+  </div>
+
+  <!-- STREAM 25 -->
+  <div class="card social" data-cats="social">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag social">Social</span>
+        <span class="tag day">Day 25</span>
+      </div>
+    </div>
+    <div class="card-title">JUDGING VIEWERS' GAMING SETUPS — LIVE ROAST SESSION</div>
+    <div class="card-desc">Ask chat to post photos of their setups in Discord or chat. Pull them up one by one and give real feedback — roast the bad, genuinely compliment the good. You become the honest setup judge nobody else is being.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Community note:</strong> People LOVE having their things noticed by creators. Even a roast is attention. Makes them feel real to you.</div>
+    </div>
+    <div class="card-num">25</div>
+  </div>
+
+  <!-- STREAM 26 -->
+  <div class="card gaming" data-cats="gaming">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag gaming">Gaming</span>
+        <span class="tag day">Day 26</span>
+      </div>
+    </div>
+    <div class="card-title">RECREATING A FAMOUS STREAMER MOMENT</div>
+    <div class="card-desc">Pick 3 iconic streaming moments (Ninja's reaction clips, Lacy's best moments, Speed going crazy) and try to recreate them as accurately as possible — same game, same scenario. Then compare side by side. Tribute + parody + discovery content.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>SEO hack:</strong> Your clips will show up in searches for those creators. Rides existing demand while showing your personality through the comparison.</div>
+    </div>
+    <div class="card-num">26</div>
+  </div>
+
+  <!-- STREAM 27 -->
+  <div class="card irl" data-cats="irl">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag irl">IRL</span>
+        <span class="tag day">Day 27</span>
+      </div>
+    </div>
+    <div class="card-title">STREAM IN A DIFFERENT LANGUAGE FOR AN HOUR</div>
+    <div class="card-desc">Pick a language you've studied even slightly — Spanish, French, even basic Japanese — and attempt to stream only in that language for 1 hour. Use Google Translate live when stuck. The struggle is funny, the attempt is charming.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Why it works:</strong> You tap into an entirely different viewer base who are thrilled to see their language attempted. Clips get shared in communities you've never touched.</div>
+    </div>
+    <div class="card-num">27</div>
+  </div>
+
+  <!-- STREAM 28 -->
+  <div class="card gaming" data-cats="gaming">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag gaming">Gaming</span>
+        <span class="tag day">Day 28</span>
+      </div>
+    </div>
+    <div class="card-title">TOURNAMENT OF EVERYTHING — CHAT VS YOU, BEST OF 7</div>
+    <div class="card-desc">5-game series against a regular viewer. Different game each round: one FPS, one racing, one fighting, one trivia, one random. Crown a champion. The narrative of the tournament arc drives people to tune in and stay for the full thing.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Recurring format:</strong> End the stream by announcing next week's challenger. Creates a league structure that gives people a reason to come back weekly.</div>
+    </div>
+    <div class="card-num">28</div>
+  </div>
+
+  <!-- STREAM 29 -->
+  <div class="card creative" data-cats="creative">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag creative">Creative</span>
+        <span class="tag day">Day 29</span>
+      </div>
+    </div>
+    <div class="card-title">BUILD A MINECRAFT WORLD WITH CHAT'S EXACT RULES</div>
+    <div class="card-desc">Start a fresh Minecraft world with a full ruleset designed live by chat in the first 15 minutes. They add restrictions: no sprinting, only wooden tools until day 20, all animals are sacred. You have to live by their laws. Completely unique world every time.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Long-game format:</strong> This world becomes a series. Viewers invest in the lore of rules they wrote. Name the world after something chat decided. Continuity = loyalty.</div>
+    </div>
+    <div class="card-num">29</div>
+  </div>
+
+  <!-- STREAM 30 -->
+  <div class="card irl" data-cats="irl social">
+    <div class="card-header">
+      <div class="card-tags">
+        <span class="tag irl">IRL</span>
+        <span class="tag social">Social</span>
+        <span class="tag day">Day 30</span>
+      </div>
+    </div>
+    <div class="card-title">THE MONTH 1 FINALE — FULL HONEST WRAP-UP</div>
+    <div class="card-desc">End-of-month debrief stream. Show every stat (followers, avg viewers, best/worst stream). Play your top 5 clips. Announce Month 2 plans live and let chat vote on what returns. No fake positivity — just real reflection, real growth, real next steps.</div>
+    <div class="card-tip">
+      <div class="card-tip-icon">💡</div>
+      <div class="card-tip-text"><strong>Legacy moment:</strong> This stream becomes the reference point. "This is where it started." Archive the VOD. Post the wrap-up as a short video everywhere. Month 1 is the origin story — make it count.</div>
+    </div>
+    <div class="card-num">30</div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p>30 IDEAS · MONTH 1 · GAMING / IRL / DIVERSE · <span>BUILT TO GROW</span></p>
+  <p style="margin-top:8px; font-size:10px;">Be consistent. Be real. The clips will come.</p>
+</div>
+
+<script>
+  function filter(cat) {
+    const cards = document.querySelectorAll('.card');
+    const btns = document.querySelectorAll('.filter-btn');
+
+    btns.forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+
+    cards.forEach(card => {
+      if (cat === 'all') {
+        card.classList.remove('hidden');
+      } else {
+        const cats = card.dataset.cats || '';
+        if (cats.includes(cat)) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      }
+    });
+  }
+</script>
+</body>
+</html>
